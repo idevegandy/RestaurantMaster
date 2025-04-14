@@ -16,11 +16,13 @@ import {
   Share2, 
   LogOut, 
   Menu, 
-  X 
+  X,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 interface NavItemProps {
   href: string;
@@ -32,22 +34,22 @@ interface NavItemProps {
 
 const NavItem = ({ href, icon, label, isActive, onClick }: NavItemProps) => (
   <Link href={href}>
-    <a
-      className={`flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 ${
+    <div
+      className={`flex items-center px-4 py-3 text-neutral-700 hover:bg-neutral-100 cursor-pointer ${
         isActive ? "bg-primary bg-opacity-10 border-r-3 border-primary text-primary" : ""
       }`}
       onClick={onClick}
     >
       <span className="w-5 text-center ml-3">{icon}</span>
       <span>{label}</span>
-    </a>
+    </div>
   </Link>
 );
 
 export function Sidebar() {
   const [location] = useLocation();
   const { user, logout } = useAuth();
-  const { t } = useLocale();
+  const { t, language, setLanguage } = useLocale();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
 
   const isSuperAdmin = user?.role === "super_admin";
@@ -55,6 +57,10 @@ export function Sidebar() {
 
   const toggleMobileSidebar = () => {
     setIsMobileOpen(!isMobileOpen);
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setLanguage(value as "he" | "ar" | "en");
   };
 
   return (

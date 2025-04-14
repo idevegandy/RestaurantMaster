@@ -34,8 +34,10 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 }
 
 function AppRoutes() {
+  const { dir } = useLocale();
+  
   return (
-    <div className="font-sans antialiased bg-neutral-50 text-neutral-800">
+    <div className={`font-sans antialiased bg-neutral-50 text-neutral-800 ${dir === 'rtl' ? 'rtl' : ''}`}>
       <Switch>
         <Route path="/login" component={Login} />
         

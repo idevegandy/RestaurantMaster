@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 type Direction = "rtl" | "ltr";
-type Language = "he" | "en";
+type Language = "he" | "ar" | "en";
 
 interface LocaleContextType {
   language: Language;
@@ -103,7 +103,10 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
           "featured_item": "הצג כפריט מומלץ",
           "display_order": "סדר הצגה",
           "location": "מיקום",
-          "created_at": "נוצר ב"
+          "created_at": "נוצר ב",
+          "menu_management": "ניהול תפריט",
+          "system_management": "ניהול מערכת",
+          "restaurant_management": "ניהול מסעדה"
         };
         
         const englishTranslations = {
@@ -188,10 +191,111 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
           "featured_item": "Featured Item",
           "display_order": "Display Order",
           "location": "Location",
-          "created_at": "Created At"
+          "created_at": "Created At",
+          "menu_management": "Menu Management",
+          "system_management": "System Management",
+          "restaurant_management": "Restaurant Management"
         };
         
-        setTranslations(language === "he" ? hebrewTranslations : englishTranslations);
+        // Arabic translations
+        const arabicTranslations = {
+          "dashboard": "لوحة التحكم",
+          "restaurants": "المطاعم",
+          "users": "المستخدمين",
+          "categories": "الفئات",
+          "statistics": "الإحصائيات",
+          "settings": "الإعدادات",
+          "logout": "تسجيل الخروج",
+          "search": "بحث...",
+          "add_restaurant": "إضافة مطعم",
+          "total_restaurants": "إجمالي المطاعم",
+          "active_users": "المستخدمين النشطين",
+          "qr_scans": "مسح رمز QR",
+          "menu_items": "عناصر القائمة",
+          "from_last_month": "من الشهر الماضي",
+          "recent_restaurants": "المطاعم الأخيرة",
+          "name": "الاسم",
+          "manager": "المدير",
+          "status": "الحالة",
+          "items": "العناصر",
+          "scans": "عمليات المسح",
+          "actions": "الإجراءات",
+          "active": "نشط",
+          "inactive": "غير نشط",
+          "setup": "إعداد",
+          "recent_activity": "النشاط الأخير",
+          "view_all_activity": "عرض كل النشاط",
+          "restaurant_details": "تفاصيل المطعم",
+          "restaurant_logo": "شعار المطعم",
+          "upload_logo": "تحميل الشعار",
+          "remove": "إزالة",
+          "restaurant_name": "اسم المطعم",
+          "description": "الوصف",
+          "phone": "الهاتف",
+          "address": "العنوان",
+          "social_media": "وسائل التواصل الاجتماعي",
+          "interface_colors": "ألوان الواجهة",
+          "primary_color": "اللون الأساسي",
+          "secondary_color": "اللون الثانوي",
+          "menu_categories": "فئات القائمة",
+          "add_category": "إضافة فئة",
+          "save_changes": "حفظ التغييرات",
+          "preview": "معاينة",
+          "qr_code_menu": "رمز QR للقائمة",
+          "generate_qr": "إنشاء رمز QR جديد",
+          "download": "تنزيل",
+          "print": "طباعة",
+          "qr_description": "قم بإنشاء رمز QR لقائمتك حتى يتمكن العملاء من الوصول إليها بسرعة. يتم تحديث الرمز تلقائيًا عند تحديث القائمة.",
+          "category_name": "اسم الفئة",
+          "category_icon": "أيقونة",
+          "category_items": "عناصر في الفئة",
+          "show_all_items": "عرض كل العناصر",
+          "cancel": "إلغاء",
+          "save": "حفظ",
+          "add_restaurant_title": "إضافة مطعم جديد",
+          "add_item_title": "إضافة عنصر قائمة",
+          "add_category_title": "إضافة فئة",
+          "edit_restaurant_title": "تعديل المطعم",
+          "edit_item_title": "تعديل عنصر القائمة",
+          "edit_category_title": "تعديل الفئة",
+          "delete_confirmation": "هل أنت متأكد أنك تريد الحذف؟",
+          "delete": "حذف",
+          "username": "اسم المستخدم",
+          "password": "كلمة المرور",
+          "email": "البريد الإلكتروني",
+          "role": "الدور",
+          "super_admin": "مدير عام",
+          "restaurant_admin": "مدير مطعم",
+          "login": "تسجيل الدخول",
+          "general": "عام",
+          "menu_editor": "محرر القائمة",
+          "appearance": "المظهر",
+          "qr_codes": "رموز QR",
+          "price": "السعر",
+          "price_shekel": "السعر (₪)",
+          "discount_price": "سعر الخصم (₪)",
+          "item_name": "اسم العنصر",
+          "item_image": "صورة العنصر",
+          "upload_image": "تحميل صورة",
+          "featured_item": "عنصر مميز",
+          "display_order": "ترتيب العرض",
+          "location": "الموقع",
+          "created_at": "تم الإنشاء في",
+          "menu_management": "إدارة القائمة",
+          "system_management": "إدارة النظام",
+          "restaurant_management": "إدارة المطعم"
+        };
+        
+        let selectedTranslations;
+        if (language === "he") {
+          selectedTranslations = hebrewTranslations;
+        } else if (language === "ar") {
+          selectedTranslations = arabicTranslations;
+        } else {
+          selectedTranslations = englishTranslations;
+        }
+        
+        setTranslations(selectedTranslations);
       } catch (error) {
         console.error("Error loading translations:", error);
       }
@@ -200,7 +304,7 @@ export function LocaleProvider({ children }: { children: React.ReactNode }) {
     loadTranslations();
   }, [language]);
 
-  const dir: Direction = language === "he" ? "rtl" : "ltr";
+  const dir: Direction = language === "he" || language === "ar" ? "rtl" : "ltr";
 
   const t = (key: string): string => {
     return translations[key] || key;
