@@ -193,6 +193,25 @@ export function Sidebar() {
         )}
 
         <div className="px-4 py-3 mt-auto border-t border-neutral-200 absolute bottom-0 w-full bg-white">
+          {/* Language Selector */}
+          <div className="mb-4">
+            <div className="flex items-center mb-2">
+              <Globe size={16} className="ml-2 text-neutral-500" />
+              <span className="text-sm font-medium text-neutral-700">Language / שפה / اللغة</span>
+            </div>
+            <Select defaultValue={language} onValueChange={handleLanguageChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="he">עברית</SelectItem>
+                <SelectItem value="ar">العربية</SelectItem>
+                <SelectItem value="en">English</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          
+          {/* User Profile */}
           {user && (
             <div className="flex items-center">
               <Avatar className="h-10 w-10 border-2 border-primary">
@@ -205,6 +224,8 @@ export function Sidebar() {
               </div>
             </div>
           )}
+          
+          {/* Logout Button */}
           <Button
             variant="outline"
             className="mt-4 w-full"

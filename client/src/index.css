@@ -2,6 +2,60 @@
 @tailwind components;
 @tailwind utilities;
 
+/* RTL Support */
+.rtl {
+  direction: rtl;
+  text-align: right;
+}
+
+.rtl .ml-2 {
+  margin-left: 0;
+  margin-right: 0.5rem;
+}
+
+.rtl .ml-3 {
+  margin-left: 0;
+  margin-right: 0.75rem;
+}
+
+.rtl .mr-3 {
+  margin-right: 0;
+  margin-left: 0.75rem;
+}
+
+.rtl .mr-2 {
+  margin-right: 0;
+  margin-left: 0.5rem;
+}
+
+/* Flip transforms for RTL */
+.rtl .translate-x-0 {
+  transform: translateX(0);
+}
+
+.rtl .-translate-x-full {
+  transform: translateX(100%);
+}
+
+/* Make sure border appears on the other side in RTL */
+.rtl .border-r-3 {
+  border-right-width: 0;
+  border-left-width: 3px;
+}
+
+/* Icons should be mirrored in RTL */
+.rtl .lucide {
+  transform: scaleX(-1);
+}
+
+/* Don't mirror these specific icons */
+.rtl .lucide-text,
+.rtl .lucide-image,
+.rtl .lucide-globe,
+.rtl .lucide-book-open {
+  transform: scaleX(1);
+}
+
 @layer base {
   * {
     @apply border-border;
