@@ -1,6 +1,7 @@
 import { pgTable, text, serial, integer, boolean, json, timestamp, uniqueIndex } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
+import { relations } from "drizzle-orm";
 
 // Users table (both super admins and restaurant admins)
 export const users = pgTable("users", {
@@ -151,3 +152,65 @@ export type QRCode = typeof qrCodes.$inferSelect;
 
 export type InsertActivityLog = z.infer<typeof insertActivityLogSchema>;
 export type ActivityLog = typeof activityLogs.$inferSelect;
+
+// Define relations
+export const usersRelations = relations(users, ({ many }) => ({
+  restaurants: many(restaurants),
+  activityLogs: many(activityLogs)
+}));
+
+export const restaurantsRelations = relations(restaurants, ({ one, many }) => ({
+  admin: one(users, {
+    fields: [restaurants.adminId],
+    references: [users.id]
+  }),
+  categories: many(categories),
+  menuItems: many(menuItems),
+  socialMediaLinks: many(socialMediaLinks),
+  qrCodes: many(qrCodes),
+  activityLogs: many(activityLogs)
+}));
+
+export const categoriesRelations = relations(categories, ({ one, many }) => ({
+  restaurant: one(restaurants, {
+    fields: [categories.restaurantId],
+    references: [restaurants.id]
+  }),
+  menuItems: many(menuItems)
+}));
+
+export const menuItemsRelations = relations(menuItems, ({ one }) => ({
+  category: one(categories, {
+    fields: [menuItems.categoryId],
+    references: [categories.id]
+  }),
+  restaurant: one(restaurants, {
+    fields: [menuItems.restaurantId],
+    references: [restaurants.id]
+  })
+}));
+
+export const socialMediaLinksRelations = relations(socialMediaLinks, ({ one }) => ({
+  restaurant: one(restaurants, {
+    fields: [socialMediaLinks.restaurantId],
+    references: [restaurants.id]
+  })
+}));
+
+export const qrCodesRelations = relations(qrCodes, ({ one }) => ({
+  restaurant: one(restaurants, {
+    fields: [qrCodes.restaurantId],
+    references: [restaurants.id]
+  })
+}));
+
+export const activityLogsRelations = relations(activityLogs, ({ one }) => ({
+  user: one(users, {
+    fields: [activityLogs.userId],
+    references: [users.id]
+  }),
+  restaurant: one(restaurants, {
+    fields: [activityLogs.restaurantId],
+    references: [restaurants.id]
+  })
+}));

@@ -7,6 +7,8 @@ import {
   qrCodes, QRCode, InsertQRCode,
   activityLogs, ActivityLog, InsertActivityLog 
 } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc, and, asc } from "drizzle-orm";
 
 // Interface for storage operations
 export interface IStorage {
@@ -357,5 +359,218 @@ export class MemStorage implements IStorage {
   }
 }
 
-// Export storage instance
-export const storage = new MemStorage();
+// Database storage implementation
+
+export class DatabaseStorage implements IStorage {
+  // User operations
+  async getUser(id: number): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user;
+  }
+
+  async getUserByUsername(username: string): Promise<User | undefined> {
+    const [user] = await db.select().from(users).where(eq(users.username, username));
+    return user;
+  }
+
+  async createUser(userData: InsertUser): Promise<User> {
+    const [user] = await db.insert(users).values(userData).returning();
+    return user;
+  }
+
+  async updateUser(id: number, userData: Partial<InsertUser>): Promise<User | undefined> {
+    const now = new Date();
+    const [updatedUser] = await db
+      .update(users)
+      .set({ ...userData, updatedAt: now })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedUser;
+  }
+
+  async deleteUser(id: number): Promise<boolean> {
+    const result = await db.delete(users).where(eq(users.id, id));
+    return !!result;
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return db.select().from(users);
+  }
+
+  // Restaurant operations
+  async getRestaurant(id: number): Promise<Restaurant | undefined> {
+    const [restaurant] = await db.select().from(restaurants).where(eq(restaurants.id, id));
+    return restaurant;
+  }
+
+  async createRestaurant(restaurantData: InsertRestaurant): Promise<Restaurant> {
+    const [restaurant] = await db.insert(restaurants).values(restaurantData).returning();
+    return restaurant;
+  }
+
+  async updateRestaurant(id: number, restaurantData: Partial<InsertRestaurant>): Promise<Restaurant | undefined> {
+    const now = new Date();
+    const [updatedRestaurant] = await db
+      .update(restaurants)
+      .set({ ...restaurantData, updatedAt: now })
+      .where(eq(restaurants.id, id))
+      .returning();
+    return updatedRestaurant;
+  }
+
+  async deleteRestaurant(id: number): Promise<boolean> {
+    const result = await db.delete(restaurants).where(eq(restaurants.id, id));
+    return !!result;
+  }
+
+  async getAllRestaurants(): Promise<Restaurant[]> {
+    return db.select().from(restaurants);
+  }
+
+  async getRestaurantsByAdminId(adminId: number): Promise<Restaurant[]> {
+    return db.select().from(restaurants).where(eq(restaurants.adminId, adminId));
+  }
+
+  // Category operations
+  async getCategory(id: number): Promise<Category | undefined> {
+    const [category] = await db.select().from(categories).where(eq(categories.id, id));
+    return category;
+  }
+
+  async createCategory(categoryData: InsertCategory): Promise<Category> {
+    const [category] = await db.insert(categories).values(categoryData).returning();
+    return category;
+  }
+
+  async updateCategory(id: number, categoryData: Partial<InsertCategory>): Promise<Category | undefined> {
+    const now = new Date();
+    const [updatedCategory] = await db
+      .update(categories)
+      .set({ ...categoryData, updatedAt: now })
+      .where(eq(categories.id, id))
+      .returning();
+    return updatedCategory;
+  }
+
+  async deleteCategory(id: number): Promise<boolean> {
+    const result = await db.delete(categories).where(eq(categories.id, id));
+    return !!result;
+  }
+
+  async getCategoriesByRestaurantId(restaurantId: number): Promise<Category[]> {
+    return db
+      .select()
+      .from(categories)
+      .where(eq(categories.restaurantId, restaurantId))
+      .orderBy(asc(categories.displayOrder));
+  }
+
+  // Menu item operations
+  async getMenuItem(id: number): Promise<MenuItem | undefined> {
+    const [menuItem] = await db.select().from(menuItems).where(eq(menuItems.id, id));
+    return menuItem;
+  }
+
+  async createMenuItem(menuItemData: InsertMenuItem): Promise<MenuItem> {
+    const [menuItem] = await db.insert(menuItems).values(menuItemData).returning();
+    return menuItem;
+  }
+
+  async updateMenuItem(id: number, menuItemData: Partial<InsertMenuItem>): Promise<MenuItem | undefined> {
+    const now = new Date();
+    const [updatedMenuItem] = await db
+      .update(menuItems)
+      .set({ ...menuItemData, updatedAt: now })
+      .where(eq(menuItems.id, id))
+      .returning();
+    return updatedMenuItem;
+  }
+
+  async deleteMenuItem(id: number): Promise<boolean> {
+    const result = await db.delete(menuItems).where(eq(menuItems.id, id));
+    return !!result;
+  }
+
+  async getMenuItemsByRestaurantId(restaurantId: number): Promise<MenuItem[]> {
+    return db.select().from(menuItems).where(eq(menuItems.restaurantId, restaurantId));
+  }
+
+  async getMenuItemsByCategoryId(categoryId: number): Promise<MenuItem[]> {
+    return db.select().from(menuItems).where(eq(menuItems.categoryId, categoryId));
+  }
+
+  // Social media operations
+  async getSocialMediaLink(id: number): Promise<SocialMediaLink | undefined> {
+    const [link] = await db.select().from(socialMediaLinks).where(eq(socialMediaLinks.id, id));
+    return link;
+  }
+
+  async createSocialMediaLink(linkData: InsertSocialMediaLink): Promise<SocialMediaLink> {
+    const [link] = await db.insert(socialMediaLinks).values(linkData).returning();
+    return link;
+  }
+
+  async updateSocialMediaLink(id: number, linkData: Partial<InsertSocialMediaLink>): Promise<SocialMediaLink | undefined> {
+    const now = new Date();
+    const [updatedLink] = await db
+      .update(socialMediaLinks)
+      .set({ ...linkData, updatedAt: now })
+      .where(eq(socialMediaLinks.id, id))
+      .returning();
+    return updatedLink;
+  }
+
+  async deleteSocialMediaLink(id: number): Promise<boolean> {
+    const result = await db.delete(socialMediaLinks).where(eq(socialMediaLinks.id, id));
+    return !!result;
+  }
+
+  async getSocialMediaLinksByRestaurantId(restaurantId: number): Promise<SocialMediaLink[]> {
+    return db.select().from(socialMediaLinks).where(eq(socialMediaLinks.restaurantId, restaurantId));
+  }
+
+  // QR code operations
+  async getQRCode(id: number): Promise<QRCode | undefined> {
+    const [qrCode] = await db.select().from(qrCodes).where(eq(qrCodes.id, id));
+    return qrCode;
+  }
+
+  async createQRCode(qrCodeData: InsertQRCode): Promise<QRCode> {
+    const [qrCode] = await db.insert(qrCodes).values(qrCodeData).returning();
+    return qrCode;
+  }
+
+  async deleteQRCode(id: number): Promise<boolean> {
+    const result = await db.delete(qrCodes).where(eq(qrCodes.id, id));
+    return !!result;
+  }
+
+  async getQRCodesByRestaurantId(restaurantId: number): Promise<QRCode[]> {
+    return db.select().from(qrCodes).where(eq(qrCodes.restaurantId, restaurantId));
+  }
+
+  // Activity log operations
+  async createActivityLog(logData: InsertActivityLog): Promise<ActivityLog> {
+    const [log] = await db.insert(activityLogs).values(logData).returning();
+    return log;
+  }
+
+  async getActivityLogsByRestaurantId(restaurantId: number): Promise<ActivityLog[]> {
+    return db
+      .select()
+      .from(activityLogs)
+      .where(eq(activityLogs.restaurantId, restaurantId))
+      .orderBy(desc(activityLogs.createdAt));
+  }
+
+  async getRecentActivityLogs(limit: number): Promise<ActivityLog[]> {
+    return db
+      .select()
+      .from(activityLogs)
+      .orderBy(desc(activityLogs.createdAt))
+      .limit(limit);
+  }
+}
+
+// Initialize the storage
+export const storage = new DatabaseStorage();
