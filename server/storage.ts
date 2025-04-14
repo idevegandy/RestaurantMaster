@@ -237,7 +237,7 @@ export class MemStorage implements IStorage {
   async getCategoriesByRestaurantId(restaurantId: number): Promise<Category[]> {
     return Array.from(this.categories.values())
       .filter(category => category.restaurantId === restaurantId)
-      .sort((a, b) => a.displayOrder - b.displayOrder);
+      .sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0));
   }
 
   // Menu item operations

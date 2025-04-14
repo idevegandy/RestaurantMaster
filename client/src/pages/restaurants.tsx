@@ -295,6 +295,7 @@ export default function Restaurants() {
           <table className="min-w-full divide-y divide-neutral-200">
             <thead className="bg-neutral-50">
               <tr>
+                <th scope="col" className="px-6 py-3 text-center text-xs font-medium text-neutral-500 uppercase tracking-wider">{t("icon")}</th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">{t("name")}</th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">{t("manager")}</th>
                 <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-neutral-500 uppercase tracking-wider">{t("status")}</th>
@@ -311,19 +312,17 @@ export default function Restaurants() {
                   
                   return (
                     <tr key={restaurant.id} className="hover:bg-neutral-50">
+                      <td className="px-6 py-4 whitespace-nowrap text-center">
+                        <Avatar className="h-10 w-10 border-2 inline-block" style={{ borderColor: restaurant.primaryColor || '#e65100' }}>
+                          <AvatarImage src={restaurant.logo || ""} alt={restaurant.name} />
+                          <AvatarFallback style={{ backgroundColor: restaurant.primaryColor || '#e65100', color: 'white' }}>
+                            {restaurant.name.charAt(0)}
+                          </AvatarFallback>
+                        </Avatar>
+                      </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Avatar className="h-10 w-10 border-2" style={{ borderColor: restaurant.primaryColor || '#e65100' }}>
-                            <AvatarImage src={restaurant.logo || ""} alt={restaurant.name} />
-                            <AvatarFallback style={{ backgroundColor: restaurant.primaryColor || '#e65100', color: 'white' }}>
-                              {restaurant.name.charAt(0)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div className="mr-4">
-                            <div className="text-sm font-medium text-neutral-900">{restaurant.name}</div>
-                            <div className="text-sm text-neutral-500">{restaurant.phone || t("no_phone")}</div>
-                          </div>
-                        </div>
+                        <div className="text-sm font-medium text-neutral-900">{restaurant.name}</div>
+                        <div className="text-sm text-neutral-500">{restaurant.phone || t("no_phone")}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-neutral-900">{manager?.name || "-"}</div>
@@ -361,7 +360,7 @@ export default function Restaurants() {
                 })
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-4 text-center text-sm text-neutral-500">
+                  <td colSpan={7} className="px-6 py-4 text-center text-sm text-neutral-500">
                     {searchTerm ? t("no_results") : t("no_restaurants")}
                   </td>
                 </tr>
