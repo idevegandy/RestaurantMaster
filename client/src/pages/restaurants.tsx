@@ -313,13 +313,15 @@ export default function Restaurants() {
                     <tr key={restaurant.id} className="hover:bg-neutral-50">
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center">
-                          <Avatar className="h-10 w-10 rounded-full">
+                          <Avatar className="h-10 w-10 border-2" style={{ borderColor: restaurant.primaryColor || '#e65100' }}>
                             <AvatarImage src={restaurant.logo || ""} alt={restaurant.name} />
-                            <AvatarFallback>{restaurant.name.charAt(0)}</AvatarFallback>
+                            <AvatarFallback style={{ backgroundColor: restaurant.primaryColor || '#e65100', color: 'white' }}>
+                              {restaurant.name.charAt(0)}
+                            </AvatarFallback>
                           </Avatar>
                           <div className="mr-4">
                             <div className="text-sm font-medium text-neutral-900">{restaurant.name}</div>
-                            <div className="text-sm text-neutral-500">{restaurant.phone}</div>
+                            <div className="text-sm text-neutral-500">{restaurant.phone || t("no_phone")}</div>
                           </div>
                         </div>
                       </td>

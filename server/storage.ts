@@ -113,6 +113,7 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const user: User = {
       ...userData,
+      role: userData.role || "restaurant_admin", // Ensure role is never undefined
       id,
       createdAt: now,
       updatedAt: now
@@ -152,6 +153,16 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const restaurant: Restaurant = {
       ...restaurantData,
+      // Ensure all required fields have values
+      address: restaurantData.address || null,
+      phone: restaurantData.phone || null,
+      email: restaurantData.email || null,
+      description: restaurantData.description || null,
+      logo: restaurantData.logo || null,
+      status: restaurantData.status || "setup",
+      primaryColor: restaurantData.primaryColor || null,
+      secondaryColor: restaurantData.secondaryColor || null,
+      rtl: restaurantData.rtl ?? true,
       id,
       createdAt: now,
       updatedAt: now
@@ -195,6 +206,9 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const category: Category = {
       ...categoryData,
+      description: categoryData.description || null,
+      icon: categoryData.icon || null,
+      displayOrder: categoryData.displayOrder || 0,
       id,
       createdAt: now,
       updatedAt: now
@@ -236,6 +250,10 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const menuItem: MenuItem = {
       ...menuItemData,
+      description: menuItemData.description || null,
+      image: menuItemData.image || null,
+      discountPrice: menuItemData.discountPrice || null,
+      featured: menuItemData.featured || null,
       id,
       createdAt: now,
       updatedAt: now
@@ -339,6 +357,11 @@ export class MemStorage implements IStorage {
     const now = new Date();
     const log: ActivityLog = {
       ...logData,
+      restaurantId: logData.restaurantId || null,
+      userId: logData.userId || null,
+      details: logData.details || {},
+      entityType: logData.entityType || null,
+      entityId: logData.entityId || null,
       id,
       createdAt: now
     };
