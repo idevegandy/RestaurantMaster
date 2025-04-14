@@ -2,6 +2,9 @@ import type { Express, Request, Response, NextFunction } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { z } from "zod";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
+import * as schema from "../shared/schema";
 import session from 'express-session';
 import memorystore from 'memorystore';
 import {
