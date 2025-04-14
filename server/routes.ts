@@ -1107,6 +1107,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Dev route to add some initial test data (only in development)
+  if (process.env.NODE_ENV !== 'production') {
+    app.post('/api/dev/seed-test-data', authMiddleware, superAdminMiddleware, async (req: AuthenticatedRequest, res: Response) => {
+      try {
+        // Create restaurant admin if doesn't exist
+        const adminExists = await storage.getUserByUsername('restaurant_admin');
+        let restaurantAdmin;
+        
+        if (!adminExists) {
+          restaurantAdmin = await storage.createUser({
+            username: 'restaurant_admin',
+            password: 'admin123', // In real app, this would be hashed
+            name: 'Restaurant Manager',
+            email: 'manager@example.com',
+            role: 'restaurant_admin'
+          });
+        } else {
+          restaurantAdmin = adminExists;
+        }
+
+        // Create restaurants with real icons
+        const restaurants = [
+          {
+            name: 'Falafel House',
+            address: 'HaHashmonaim 10, Tel Aviv',
+            description: 'Authentic falafel and hummus served fresh daily.',
+            status: 'active',
+            adminId: restaurantAdmin.id,
+            primaryColor: '#4CAF50',
+            logo: 'https://cdn.iconscout.com/icon/free/png-256/free-falafel-kebab-food-emoj-symbol-30700.png',
+            phone: '+972 3-555-1234',
+            email: 'info@falafelhouse.com',
+            rtl: true
+          },
+          {
+            name: 'Shawarma Palace',
+            address: 'Ben Yehuda 50, Jerusalem',
+            description: 'Traditional shawarma and middle eastern cuisine.',
+            status: 'active',
+            adminId: restaurantAdmin.id,
+            primaryColor: '#FF9800',
+            logo: 'https://cdn-icons-png.flaticon.com/512/6978/6978255.png',
+            phone: '+972 2-555-7890',
+            email: 'contact@shawarmapalace.com',
+            rtl: true
+          },
+          {
+            name: 'Hummus Haven',
+            address: 'Rothschild 22, Tel Aviv',
+            description: 'The best hummus in town, served with fresh pita.',
+            status: 'active',
+            adminId: restaurantAdmin.id,
+            primaryColor: '#8D6E63',
+            logo: 'https://cdn-icons-png.flaticon.com/512/2553/2553691.png',
+            phone: '+972 3-555-4321',
+            email: 'info@hummushaven.com',
+            rtl: true
+          }
+        ];
+
+        for (const restaurantData of restaurants) {
+          // Check if restaurant already exists
+          const existingRestaurants = await db.select()
+            .from(schema.restaurants)
+            .where(eq(schema.restaurants.name, restaurantData.name));
+          
+          if (existingRestaurants.length === 0) {
+            const restaurant = await storage.createRestaurant(restaurantData);
+            
+            // Log activity
+            await storage.createActivityLog({
+              userId: req.user?.id,
+              action: 'create_restaurant',
+              restaurantId: restaurant.id,
+              details: { name: restaurant.name },
+              entityType: 'restaurant',
+              entityId: restaurant.id
+            });
+          }
+        }
+
+        res.json({ message: 'Test data created successfully' });
+      } catch (error) {
+        console.error('Error creating test data:', error);
+        res.status(500).json({ message: 'Internal server error' });
+      }
+    });
+  }
+
   const httpServer = createServer(app);
 
   return httpServer;

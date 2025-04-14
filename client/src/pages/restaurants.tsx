@@ -313,11 +313,14 @@ export default function Restaurants() {
                   return (
                     <tr key={restaurant.id} className="hover:bg-neutral-50">
                       <td className="px-6 py-4 whitespace-nowrap text-center">
-                        <Avatar className="h-10 w-10 border-2 inline-block" style={{ borderColor: restaurant.primaryColor || '#e65100' }}>
-                          <AvatarImage src={restaurant.logo || ""} alt={restaurant.name} />
-                          <AvatarFallback style={{ backgroundColor: restaurant.primaryColor || '#e65100', color: 'white' }}>
-                            {restaurant.name.charAt(0)}
-                          </AvatarFallback>
+                        <Avatar className="h-12 w-12 border-2 inline-block" style={{ borderColor: restaurant.primaryColor || '#e65100' }}>
+                          {restaurant.logo ? (
+                            <AvatarImage src={restaurant.logo} alt={restaurant.name} className="p-1" />
+                          ) : (
+                            <AvatarFallback style={{ backgroundColor: restaurant.primaryColor || '#e65100', color: 'white' }}>
+                              {restaurant.name.charAt(0)}
+                            </AvatarFallback>
+                          )}
                         </Avatar>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -400,7 +403,7 @@ export default function Restaurants() {
                   <FormLabel>{t("restaurant_logo")}</FormLabel>
                   <FileUpload
                     onFileSelected={(file) => setFile(file)}
-                    currentImageUrl={currentRestaurant?.logo}
+                    currentImageUrl={currentRestaurant?.logo || ''}
                     accept="image/*"
                     maxSize={2}
                     label={t("upload_logo")}
@@ -547,7 +550,7 @@ export default function Restaurants() {
                       <FormControl>
                         <input
                           type="checkbox"
-                          checked={field.value}
+                          checked={field.value || false}
                           onChange={(e) => field.onChange(e.target.checked)}
                           className="h-4 w-4 text-primary focus:ring-primary border-neutral-300 rounded"
                         />
