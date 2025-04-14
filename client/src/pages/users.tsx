@@ -404,14 +404,39 @@ export default function Users() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>{isEditing ? t("new_password") : t("password")}</FormLabel>
+                    <div className="flex justify-between items-center">
+                      <FormLabel>{isEditing ? t("new_password") : t("password")}</FormLabel>
+                      {isEditing && (
+                        <Button 
+                          type="button" 
+                          variant="ghost" 
+                          size="sm"
+                          className="h-6 text-xs text-primary" 
+                          onClick={() => {
+                            const inputElem = document.querySelector('input[name="password"]') as HTMLInputElement;
+                            if (inputElem) {
+                              inputElem.type = inputElem.type === 'password' ? 'text' : 'password';
+                            }
+                          }}
+                        >
+                          {t("toggle_visibility") || "הצג/הסתר"}
+                        </Button>
+                      )}
+                    </div>
                     <FormControl>
-                      <Input 
-                        type="password" 
-                        {...field} 
-                        placeholder={isEditing ? t("leave_empty_to_keep") : "••••••••"} 
-                      />
+                      <div className="relative">
+                        <Input 
+                          type="password" 
+                          {...field} 
+                          placeholder={isEditing ? t("leave_empty_to_keep") : "••••••••"} 
+                        />
+                      </div>
                     </FormControl>
+                    {isEditing && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        {t("password_help_text") || "מנהלי מסעדות חייבים לדווח על פרטי ההתחברות שלהם. עריכת הסיסמה כאן תשנה את סיסמתם."}
+                      </p>
+                    )}
                     <FormMessage />
                   </FormItem>
                 )}

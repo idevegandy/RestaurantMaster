@@ -145,9 +145,10 @@ export default function Dashboard() {
           icon={<UtensilsCrossed className="h-5 w-5" />}
           iconColor="text-primary"
           iconBgColor="bg-primary bg-opacity-10"
-          title={t("total_restaurants")}
+          title={t("total_restaurants") || "סה״כ מסעדות"}
           value={restaurants?.length || 0}
           change={12}
+          changeLabel={t("from_last_month") || "מהחודש שעבר"}
         />
         
         <DashboardCard
