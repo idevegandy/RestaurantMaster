@@ -18,6 +18,9 @@ import {
   Trash2,
   AlertTriangle,
   X,
+  UserCircle,
+  User as UserIcon,
+  Key as KeyIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -44,6 +47,14 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/ui/file-upload";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { Restaurant, User, insertRestaurantSchema } from "@shared/schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -392,7 +403,7 @@ export default function Restaurants() {
                                   // Open the edit user form for this restaurant's admin
                                   if (manager) {
                                     // Find the user with this ID
-                                    navigate(`/users?edit=${manager.id}`);
+                                    setLocation(`/users?edit=${manager.id}`);
                                   }
                                 }}>
                                   <UserIcon className="h-4 w-4 mr-2" />
@@ -401,7 +412,7 @@ export default function Restaurants() {
                                 <DropdownMenuItem onClick={() => {
                                   // Open the edit user form and focus on password field
                                   if (manager) {
-                                    navigate(`/users?edit=${manager.id}&focus=password`);
+                                    setLocation(`/users?edit=${manager.id}&focus=password`);
                                   }
                                 }}>
                                   <KeyIcon className="h-4 w-4 mr-2" />
