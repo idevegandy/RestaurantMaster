@@ -54,12 +54,11 @@ export function QRCodeGenerator({
   return (
     <div className="relative group">
       <div className="relative">
-        <QRCode
+        <QRCodeSVG
           value={value}
           size={size}
           level={level}
           includeMargin={includeMargin}
-          renderAs="svg"
           style={{ maxWidth: '100%', height: 'auto' }}
         />
         {logoImage}

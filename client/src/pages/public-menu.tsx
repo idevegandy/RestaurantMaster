@@ -33,8 +33,8 @@ export default function PublicMenu() {
   
   // Fetch menu data
   const { data: menuData, isLoading, error } = useQuery<PublicMenuData>({
-    queryKey: ["/api/public/restaurants", restaurantId, "menu"],
-    enabled: !!restaurantId && !isNaN(restaurantId),
+    queryKey: ["/api/public/menus", slug],
+    enabled: !!slug && !isNaN(restaurantId),
   });
   
   // Set first category as active when data loads
