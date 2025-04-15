@@ -30,7 +30,7 @@ export function DashboardCard({
     <Card>
       <CardContent className="p-6">
         <div className="flex items-center">
-          <div className={`p-3 rounded-full ${iconBgColor} ${iconColor} flex items-center justify-center`}>
+          <div className={`p-3 rounded-full bg-opacity-10 ${iconBgColor} ${iconColor} flex items-center justify-center`}>
             {icon}
           </div>
           <div className="mr-4 flex-1">
