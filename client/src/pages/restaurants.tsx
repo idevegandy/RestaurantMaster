@@ -69,9 +69,17 @@ export default function Restaurants() {
 
   const isSuperAdmin = user?.role === "super_admin";
 
+  // For restaurant admins, only fetch their restaurants
   const { data: restaurants, isLoading: isLoadingRestaurants } = useQuery<Restaurant[]>({
     queryKey: ["/api/restaurants"],
     enabled: !!user,
+    select: (data) => {
+      // Filter restaurants for restaurant admins
+      if (user?.role === "restaurant_admin") {
+        return data.filter(restaurant => restaurant.adminId === user.id);
+      }
+      return data;
+    }
   });
 
   const { data: users, isLoading: isLoadingUsers } = useQuery<User[]>({
@@ -91,7 +99,9 @@ export default function Restaurants() {
   const formSchema = z.object({
     name: z.string().min(1, { message: t("name_required") }),
     description: z.string().optional(),
-    adminId: z.number().min(1, { message: t("manager_required") }),
+    adminId: isSuperAdmin 
+      ? z.number().min(1, { message: t("manager_required") })
+      : z.number().default(user?.id || 0),
     phone: z.string().optional(),
     email: z.string().email().optional().or(z.literal("")),
     address: z.string().optional(),
@@ -146,8 +156,22 @@ export default function Restaurants() {
     setShowDialog(!!action);
     if (action === "edit" && idParam) {
       setCurrentRestaurantId(parseInt(idParam));
+    } else if (action === "add") {
+      setCurrentRestaurantId(undefined);
+      form.reset({
+        name: "",
+        description: "",
+        adminId: isSuperAdmin ? 0 : user?.id ?? 0,
+        phone: "",
+        email: "",
+        address: "",
+        status: "setup",
+        primaryColor: "#e65100",
+        secondaryColor: "#f57c00",
+        rtl: true,
+      });
     }
-  }, [action, idParam]);
+  }, [action, idParam, form, isSuperAdmin, user]);
 
   // Reset URL when dialog is closed
   const closeDialog = () => {
@@ -160,16 +184,22 @@ export default function Restaurants() {
   // Handle form submission
   const onSubmit = async (data: z.infer<typeof formSchema>) => {
     try {
+      // Ensure restaurant admin ID is set for restaurant admins
+      const submissionData = { ...data };
+      if (!isSuperAdmin) {
+        submissionData.adminId = user?.id || 0;
+      }
+
       if (action === "edit" && currentRestaurantId) {
         // Update existing restaurant
-        await apiRequest("PUT", `/api/restaurants/${currentRestaurantId}`, data);
+        await apiRequest("PUT", `/api/restaurants/${currentRestaurantId}`, submissionData);
         toast({
           title: t("success"),
           description: t("restaurant_updated"),
         });
       } else {
         // Create new restaurant
-        await apiRequest("POST", "/api/restaurants", data);
+        await apiRequest("POST", "/api/restaurants", submissionData);
         toast({
           title: t("success"),
           description: t("restaurant_created"),

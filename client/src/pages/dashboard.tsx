@@ -21,9 +21,17 @@ export default function Dashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const isSuperAdmin = user?.role === "super_admin";
 
+  // For restaurant admins, only fetch their restaurants
   const { data: restaurants, isLoading: isLoadingRestaurants } = useQuery<Restaurant[]>({
     queryKey: ["/api/restaurants"],
     enabled: !!user,
+    select: (data) => {
+      // Filter restaurants for restaurant admins
+      if (user?.role === "restaurant_admin") {
+        return data.filter(restaurant => restaurant.adminId === user.id);
+      }
+      return data;
+    }
   });
 
   const { data: users } = useQuery<User[]>({
