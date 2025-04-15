@@ -191,7 +191,8 @@ export default function Restaurants() {
         status: currentRestaurant.status,
         primaryColor: currentRestaurant.primaryColor || "#e65100",
         secondaryColor: currentRestaurant.secondaryColor || "#f57c00",
-        rtl: currentRestaurant.rtl,
+        // Handle rtl value - ensure it's a boolean 
+        rtl: currentRestaurant.rtl === null ? true : !!currentRestaurant.rtl,
       });
     }
   }, [currentRestaurant, action, form]);
@@ -300,6 +301,16 @@ export default function Restaurants() {
   const openDeleteDialog = (id: number) => {
     setCurrentRestaurantId(id);
     setShowDeleteDialog(true);
+  };
+  
+  // Handle edit admin button click
+  const handleEditAdmin = (adminId: number) => {
+    setLocation(`/users?edit=${adminId}`);
+  };
+  
+  // Handle reset admin password button click
+  const handleResetAdminPassword = (adminId: number) => {
+    setLocation(`/users?edit=${adminId}&focus=password`);
   };
 
   // Function to get status badge element
@@ -411,22 +422,15 @@ export default function Restaurants() {
                               <DropdownMenuContent align="end">
                                 <DropdownMenuLabel>{t("manage_admin")}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
-                                <DropdownMenuItem onClick={() => {
-                                  // Open the edit user form for this restaurant's admin
-                                  if (manager) {
-                                    // Find the user with this ID
-                                    setLocation(`/users?edit=${manager.id}`);
-                                  }
-                                }}>
+                                <DropdownMenuItem
+                                  onSelect={() => manager && handleEditAdmin(manager.id)}
+                                >
                                   <UserIcon className="h-4 w-4 mr-2" />
                                   {t("edit_admin_details")}
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={() => {
-                                  // Open the edit user form and focus on password field
-                                  if (manager) {
-                                    setLocation(`/users?edit=${manager.id}&focus=password`);
-                                  }
-                                }}>
+                                <DropdownMenuItem
+                                  onSelect={() => manager && handleResetAdminPassword(manager.id)}
+                                >
                                   <KeyIcon className="h-4 w-4 mr-2" />
                                   {t("reset_admin_password")}
                                 </DropdownMenuItem>
@@ -461,7 +465,7 @@ export default function Restaurants() {
           <Button variant="ghost" size="sm" disabled>
             {t("previous")}
           </Button>
-          <span className="text-sm text-neutral-500">{t("page", { current: 1, total: 1 })}</span>
+          <span className="text-sm text-neutral-500">{t("page", { current: "1", total: "1" })}</span>
           <Button variant="ghost" size="sm" disabled>
             {t("next")}
           </Button>
@@ -470,8 +474,10 @@ export default function Restaurants() {
 
       {/* Restaurant Form Dialog */}
       <Dialog open={showDialog} onOpenChange={(open) => {
-        setShowDialog(open);
-        if (!open) closeDialog();
+        if (open !== showDialog) {
+          setShowDialog(open);
+          if (!open) closeDialog();
+        }
       }}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>

@@ -32,19 +32,28 @@ interface NavItemProps {
   onClick?: () => void;
 }
 
-const NavItem = ({ href, icon, label, isActive, onClick }: NavItemProps) => (
-  <Link href={href}>
-    <div
-      className={`flex items-center px-4 py-3 hover:bg-neutral-100 cursor-pointer ${
-        isActive ? "bg-primary/10 border-r-3 border-primary" : "text-neutral-700"
-      }`}
-      onClick={onClick}
-    >
-      <span className="w-5 text-center ml-3">{icon}</span>
-      <span className={isActive ? "font-medium text-primary" : ""}>{label}</span>
-    </div>
-  </Link>
-);
+const NavItem = ({ href, icon, label, isActive, onClick }: NavItemProps) => {
+  const [, navigate] = useLocation();
+  
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    navigate(href);
+    if (onClick) onClick();
+  };
+  
+  return (
+    <a href={href} onClick={handleClick}>
+      <div
+        className={`flex items-center px-4 py-3 hover:bg-neutral-100 cursor-pointer ${
+          isActive ? "bg-primary/10 border-r-3 border-primary" : "text-neutral-700"
+        }`}
+      >
+        <span className="w-5 text-center ml-3">{icon}</span>
+        <span className={isActive ? "font-medium text-primary" : ""}>{label}</span>
+      </div>
+    </a>
+  );
+};
 
 export function Sidebar() {
   const [location] = useLocation();
