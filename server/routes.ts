@@ -1094,15 +1094,74 @@ export async function registerRoutes(app: Express): Promise<Server> {
           secondaryColor: restaurant.secondaryColor,
           rtl: restaurant.rtl,
           phone: restaurant.phone,
-          address: restaurant.address
+          address: restaurant.address,
+          email: restaurant.email
         },
         categories: categorizedMenu,
-        socialMediaLinks
+        socialLinks: socialMediaLinks
       };
       
       res.json(publicMenu);
     } catch (error) {
       console.error('Get public menu error:', error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  });
+  
+  // Public Menu Route by slug - for public-facing menu pages
+  app.get('/api/public/menus/:slug', async (req: Request, res: Response) => {
+    try {
+      // For now, we're using the restaurantId as the slug
+      // In a future implementation, we could use a more sophisticated slug system
+      const restaurantId = parseInt(req.params.slug);
+      if (isNaN(restaurantId)) {
+        return res.status(400).json({ message: "Invalid menu identifier" });
+      }
+      
+      const restaurant = await storage.getRestaurant(restaurantId);
+      if (!restaurant) {
+        return res.status(404).json({ message: "Menu not found" });
+      }
+      
+      // Only return active restaurants
+      if (restaurant.status !== 'active') {
+        return res.status(404).json({ message: "Restaurant menu not available" });
+      }
+      
+      const categories = await storage.getCategoriesByRestaurantId(restaurantId);
+      const menuItems = await storage.getMenuItemsByRestaurantId(restaurantId);
+      const socialMediaLinks = await storage.getSocialMediaLinksByRestaurantId(restaurantId);
+      
+      // Group menu items by category
+      const categorizedMenu = categories.map(category => {
+        const items = menuItems.filter(item => item.categoryId === category.id);
+        return {
+          ...category,
+          items
+        };
+      });
+      
+      // Create the public menu response
+      const publicMenu = {
+        restaurant: {
+          id: restaurant.id,
+          name: restaurant.name,
+          description: restaurant.description,
+          logo: restaurant.logo,
+          primaryColor: restaurant.primaryColor,
+          secondaryColor: restaurant.secondaryColor,
+          rtl: restaurant.rtl,
+          phone: restaurant.phone,
+          address: restaurant.address,
+          email: restaurant.email
+        },
+        categories: categorizedMenu,
+        socialLinks: socialMediaLinks
+      };
+      
+      res.json(publicMenu);
+    } catch (error) {
+      console.error('Get public menu by slug error:', error);
       res.status(500).json({ message: "Internal server error" });
     }
   });
