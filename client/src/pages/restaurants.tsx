@@ -230,7 +230,6 @@ export default function Restaurants() {
       rtl: true,
     });
     setShowDialog(true);
-    setLocation("/restaurants?action=new");
   };
 
   // Handle edit restaurant button click

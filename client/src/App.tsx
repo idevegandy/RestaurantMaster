@@ -54,13 +54,13 @@ function AppRoutes() {
               <Sidebar />
               <div className="flex-1 overflow-y-auto">
                 <Switch>
-                  <Route path="/restaurant/:id/dashboard" component={RestaurantDashboard} />
-                  <Route path="/restaurant/:id/menu" component={MenuEditor} />
-                  <Route path="/restaurant/:id/appearance" component={Appearance} />
-                  <Route path="/restaurant/:id/qr-codes" component={QRCodes} />
-                  <Route path="/restaurant/:id/social-media" component={SocialMedia} />
-                  <Route path="/restaurants" component={Restaurants} />
+                  <Route path="/restaurants/:id/dashboard" component={RestaurantDashboard} />
+                  <Route path="/restaurants/:id/menu" component={MenuEditor} />
+                  <Route path="/restaurants/:id/appearance" component={Appearance} />
+                  <Route path="/restaurants/:id/qr-codes" component={QRCodes} />
+                  <Route path="/restaurants/:id/social-media" component={SocialMedia} />
                   <Route path="/restaurants/new" component={Restaurants} />
+                  <Route path="/restaurants" component={Restaurants} />
                   <Route path="/users" component={Users} />
                   <Route path="/categories" component={Categories} />
                   <Route path="/" component={Dashboard} />
