@@ -37,7 +37,6 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-  FormDescription,
 } from "@/components/ui/form";
 import {
   Select,
@@ -48,7 +47,6 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/ui/file-upload";
-import { Switch } from "@/components/ui/switch";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -68,9 +66,6 @@ export default function Restaurants() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
-  // Important: Define isSuperAdmin early as it's used in form schema
-  const isSuperAdmin = user?.role === "super_admin";
 
   const [searchParams, setSearchParams] = useState(new URLSearchParams(location.split("?")[1]));
   const action = searchParams.get("action");
@@ -81,7 +76,6 @@ export default function Restaurants() {
   const [showDialog, setShowDialog] = useState(!!action);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [currentRestaurantId, setCurrentRestaurantId] = useState<number | undefined>(restaurantId);
-  const [file, setFile] = useState<File | null>(null);
   
   // Form validation schema
   const formSchema = z.object({
@@ -115,6 +109,40 @@ export default function Restaurants() {
       rtl: true,
     },
   });
+  
+  // Update state when URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.split("?")[1]);
+    setSearchParams(params);
+    const newAction = params.get("action");
+    const newIdParam = params.get("id");
+    
+    // Update dialog visibility based on URL parameters
+    setShowDialog(!!newAction);
+    
+    // Update current restaurant ID if there's an ID in the URL
+    if (newIdParam) {
+      setCurrentRestaurantId(parseInt(newIdParam));
+    } else if (newAction === "add") {
+      setCurrentRestaurantId(undefined);
+      // Reset form when adding a new restaurant
+      form.reset({
+        name: "",
+        description: "",
+        adminId: isSuperAdmin ? 0 : user?.id ?? 0,
+        phone: "",
+        email: "",
+        address: "",
+        status: "setup",
+        primaryColor: "#e65100",
+        secondaryColor: "#f57c00",
+        rtl: true,
+      });
+    }
+  }, [location, form, isSuperAdmin, user]);
+  const [file, setFile] = useState<File | null>(null);
+
+  const isSuperAdmin = user?.role === "super_admin";
 
   // For restaurant admins, only fetch their restaurants
   const { data: restaurants, isLoading: isLoadingRestaurants } = useQuery<Restaurant[]>({
@@ -147,37 +175,6 @@ export default function Restaurants() {
     restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // Update state when URL changes
-  useEffect(() => {
-    const params = new URLSearchParams(location.split("?")[1]);
-    setSearchParams(params);
-    const newAction = params.get("action");
-    const newIdParam = params.get("id");
-    
-    // Update dialog visibility based on URL parameters
-    setShowDialog(!!newAction);
-    
-    // Update current restaurant ID if there's an ID in the URL
-    if (newIdParam) {
-      setCurrentRestaurantId(parseInt(newIdParam));
-    } else if (newAction === "add") {
-      setCurrentRestaurantId(undefined);
-      // Reset form when adding a new restaurant
-      form.reset({
-        name: "",
-        description: "",
-        adminId: isSuperAdmin ? 0 : user?.id ?? 0,
-        phone: "",
-        email: "",
-        address: "",
-        status: "setup",
-        primaryColor: "#e65100",
-        secondaryColor: "#f57c00",
-        rtl: true,
-      });
-    }
-  }, [location, form, isSuperAdmin, user]);
-
   // Load current restaurant data into form when editing
   useEffect(() => {
     if (currentRestaurant && action === "edit") {
@@ -195,6 +192,28 @@ export default function Restaurants() {
       });
     }
   }, [currentRestaurant, action, form]);
+
+  // Handle dialog visibility based on URL parameters
+  useEffect(() => {
+    setShowDialog(!!action);
+    if (action === "edit" && idParam) {
+      setCurrentRestaurantId(parseInt(idParam));
+    } else if (action === "add") {
+      setCurrentRestaurantId(undefined);
+      form.reset({
+        name: "",
+        description: "",
+        adminId: isSuperAdmin ? 0 : user?.id ?? 0,
+        phone: "",
+        email: "",
+        address: "",
+        status: "setup",
+        primaryColor: "#e65100",
+        secondaryColor: "#f57c00",
+        rtl: true,
+      });
+    }
+  }, [action, idParam, form, isSuperAdmin, user]);
 
   // Reset URL when dialog is closed
   const closeDialog = () => {
@@ -469,10 +488,7 @@ export default function Restaurants() {
       </Card>
 
       {/* Restaurant Form Dialog */}
-      <Dialog open={showDialog} onOpenChange={(open) => {
-        setShowDialog(open);
-        if (!open) closeDialog();
-      }}>
+      <Dialog open={showDialog} onOpenChange={setShowDialog}>
         <DialogContent className="sm:max-w-[600px]">
           <DialogHeader>
             <DialogTitle>
@@ -623,10 +639,7 @@ export default function Restaurants() {
                       <FormItem>
                         <FormLabel>{t("description")}</FormLabel>
                         <FormControl>
-                          <Textarea 
-                            {...field} 
-                            rows={3} 
-                          />
+                          <Textarea rows={3} {...field} />
                         </FormControl>
                         <FormMessage />
                       </FormItem>
@@ -636,98 +649,38 @@ export default function Restaurants() {
 
                 <FormField
                   control={form.control}
-                  name="primaryColor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("primary_color")}</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center space-x-2 space-x-reverse">
-                          <Input 
-                            type="color" 
-                            {...field} 
-                            className="w-14 h-10" 
-                          />
-                          <Input 
-                            type="text" 
-                            value={field.value} 
-                            onChange={field.onChange} 
-                            className="w-full"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name="secondaryColor"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>{t("secondary_color")}</FormLabel>
-                      <FormControl>
-                        <div className="flex items-center space-x-2 space-x-reverse">
-                          <Input 
-                            type="color" 
-                            {...field} 
-                            className="w-14 h-10" 
-                          />
-                          <Input 
-                            type="text" 
-                            value={field.value} 
-                            onChange={field.onChange} 
-                            className="w-full"
-                          />
-                        </div>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
                   name="rtl"
                   render={({ field }) => (
-                    <FormItem className="flex flex-row items-center justify-between rounded-lg border p-3 shadow-sm">
-                      <div className="space-y-0.5">
-                        <FormLabel>{t("rtl_support")}</FormLabel>
-                        <FormDescription>
-                          {t("rtl_description")}
-                        </FormDescription>
-                      </div>
+                    <FormItem className="flex flex-row items-center space-x-2 space-x-reverse rounded-md border p-3">
                       <FormControl>
-                        <Switch
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
+                        <input
+                          type="checkbox"
+                          checked={field.value || false}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                          className="h-4 w-4 text-primary focus:ring-primary border-neutral-300 rounded"
                         />
                       </FormControl>
+                      <FormLabel className="mr-2 text-sm font-normal">{t("rtl_support")}</FormLabel>
                     </FormItem>
                   )}
                 />
               </div>
 
               <DialogFooter>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  onClick={closeDialog}
-                >
+                <Button type="button" variant="outline" onClick={closeDialog}>
                   {t("cancel")}
                 </Button>
-                <Button type="submit" disabled={form.formState.isSubmitting}>
-                  {form.formState.isSubmitting ? (
-                    <span className="flex items-center">
-                      <svg className="animate-spin -mr-1 ml-3 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      {t("saving")}
-                    </span>
-                  ) : (
-                    t("save")
-                  )}
+                {action === "edit" && (
+                  <Button 
+                    type="button" 
+                    variant="destructive" 
+                    onClick={() => setShowDeleteDialog(true)}
+                  >
+                    {t("delete")}
+                  </Button>
+                )}
+                <Button type="submit">
+                  {action === "edit" ? t("save_changes") : t("add_restaurant")}
                 </Button>
               </DialogFooter>
             </form>
@@ -740,18 +693,13 @@ export default function Restaurants() {
         <DialogContent className="sm:max-w-[425px]">
           <DialogHeader>
             <DialogTitle className="flex items-center">
-              <AlertTriangle className="h-5 w-5 mr-2 text-red-500" />
+              <AlertTriangle className="h-5 w-5 text-red-500 mr-2" />
               {t("confirm_delete")}
             </DialogTitle>
             <DialogDescription>
               {t("delete_restaurant_confirmation")}
             </DialogDescription>
           </DialogHeader>
-          <div className="py-4">
-            <p className="text-sm text-neutral-500">
-              {t("delete_restaurant_warning")}
-            </p>
-          </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
               {t("cancel")}
