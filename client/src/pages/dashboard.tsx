@@ -41,7 +41,11 @@ export default function Dashboard() {
   );
 
   const handleAddRestaurant = () => {
-    navigate("/restaurant/new");
+    navigate("/restaurants");
+    // We'll trigger the add restaurant dialog via URL parameter
+    setTimeout(() => {
+      navigate("/restaurants?action=add");
+    }, 10);
   };
 
   const handleEditRestaurant = (id: number) => {
