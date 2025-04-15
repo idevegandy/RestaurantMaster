@@ -50,6 +50,7 @@ function AppRoutes() {
                 <Switch>
                   <Route path="/" component={Dashboard} />
                   <Route path="/restaurants" component={Restaurants} />
+                  <Route path="/restaurant/new" component={Restaurants} />
                   <Route path="/users" component={Users} />
                   <Route path="/categories" component={Categories} />
                   <Route path="/restaurant/:id/dashboard" component={RestaurantDashboard} />
