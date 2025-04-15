@@ -55,18 +55,18 @@ export default function Restaurants() {
   const [location, setLocation] = useLocation();
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  
+
   const [searchParams] = useState(new URLSearchParams(location.split("?")[1]));
   const action = searchParams.get("action");
   const idParam = searchParams.get("id");
   const restaurantId = idParam ? parseInt(idParam) : undefined;
-  
+
   const [searchTerm, setSearchTerm] = useState("");
   const [showDialog, setShowDialog] = useState(!!action);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [currentRestaurantId, setCurrentRestaurantId] = useState<number | undefined>(restaurantId);
   const [file, setFile] = useState<File | null>(null);
-  
+
   const isSuperAdmin = user?.role === "super_admin";
 
   const { data: restaurants, isLoading: isLoadingRestaurants } = useQuery<Restaurant[]>({
@@ -175,7 +175,7 @@ export default function Restaurants() {
           description: t("restaurant_created"),
         });
       }
-      
+
       // Refresh restaurants data
       queryClient.invalidateQueries({ queryKey: ["/api/restaurants"] });
       closeDialog();
@@ -192,14 +192,14 @@ export default function Restaurants() {
   // Handle restaurant deletion
   const handleDeleteRestaurant = async () => {
     if (!currentRestaurantId) return;
-    
+
     try {
       await apiRequest("DELETE", `/api/restaurants/${currentRestaurantId}`, undefined);
       toast({
         title: t("success"),
         description: t("restaurant_deleted"),
       });
-      
+
       // Refresh restaurants data
       queryClient.invalidateQueries({ queryKey: ["/api/restaurants"] });
       setShowDeleteDialog(false);
@@ -229,7 +229,7 @@ export default function Restaurants() {
       secondaryColor: "#f57c00",
       rtl: true,
     });
-    setLocation("/restaurants?action=add");
+    setLocation("/restaurant/new");
   };
 
   // Handle edit restaurant button click
@@ -309,7 +309,7 @@ export default function Restaurants() {
                 filteredRestaurants.map((restaurant) => {
                   const manager = users?.find(u => u.id === restaurant.adminId);
                   const createdDate = new Date(restaurant.createdAt).toLocaleDateString();
-                  
+
                   return (
                     <tr key={restaurant.id} className="hover:bg-neutral-50">
                       <td className="px-6 py-4 whitespace-nowrap text-center">
@@ -409,7 +409,7 @@ export default function Restaurants() {
                     label={t("upload_logo")}
                   />
                 </div>
-                
+
                 <div className="md:col-span-2">
                   <FormField
                     control={form.control}
@@ -425,7 +425,7 @@ export default function Restaurants() {
                     )}
                   />
                 </div>
-                
+
                 {isSuperAdmin && (
                   <FormField
                     control={form.control}
@@ -455,7 +455,7 @@ export default function Restaurants() {
                     )}
                   />
                 )}
-                
+
                 <FormField
                   control={form.control}
                   name="status"
@@ -481,7 +481,7 @@ export default function Restaurants() {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="phone"
@@ -495,7 +495,7 @@ export default function Restaurants() {
                     </FormItem>
                   )}
                 />
-                
+
                 <FormField
                   control={form.control}
                   name="email"
@@ -509,7 +509,7 @@ export default function Restaurants() {
                     </FormItem>
                   )}
                 />
-                
+
                 <div className="md:col-span-2">
                   <FormField
                     control={form.control}
@@ -525,7 +525,7 @@ export default function Restaurants() {
                     )}
                   />
                 </div>
-                
+
                 <div className="md:col-span-2">
                   <FormField
                     control={form.control}
@@ -541,7 +541,7 @@ export default function Restaurants() {
                     )}
                   />
                 </div>
-                
+
                 <FormField
                   control={form.control}
                   name="rtl"

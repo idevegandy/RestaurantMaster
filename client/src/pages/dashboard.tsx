@@ -41,7 +41,7 @@ export default function Dashboard() {
   );
 
   const handleAddRestaurant = () => {
-    navigate("/restaurants?action=add");
+    navigate("/restaurant/new");
   };
 
   const handleEditRestaurant = (id: number) => {
