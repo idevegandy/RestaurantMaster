@@ -144,7 +144,7 @@ export default function Dashboard() {
         <DashboardCard
           icon={<UtensilsCrossed className="h-5 w-5" />}
           iconColor="text-primary"
-          iconBgColor="bg-primary bg-opacity-10"
+          iconBgColor="bg-primary/10"
           title={t("total_restaurants") || "סה״כ מסעדות"}
           value={restaurants?.length || 0}
           change={12}
