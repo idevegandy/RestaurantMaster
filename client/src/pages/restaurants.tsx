@@ -67,7 +67,7 @@ export default function Restaurants() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
-  const [searchParams] = useState(new URLSearchParams(location.split("?")[1]));
+  const [searchParams, setSearchParams] = useState(new URLSearchParams(location.split("?")[1]));
   const action = searchParams.get("action");
   const idParam = searchParams.get("id");
   const restaurantId = idParam ? parseInt(idParam) : undefined;
@@ -76,6 +76,70 @@ export default function Restaurants() {
   const [showDialog, setShowDialog] = useState(!!action);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [currentRestaurantId, setCurrentRestaurantId] = useState<number | undefined>(restaurantId);
+  
+  // Form validation schema
+  const formSchema = z.object({
+    name: z.string().min(1, { message: t("name_required") }),
+    description: z.string().optional(),
+    adminId: isSuperAdmin 
+      ? z.number().min(1, { message: t("manager_required") })
+      : z.number().default(user?.id || 0),
+    phone: z.string().optional(),
+    email: z.string().email().optional().or(z.literal("")),
+    address: z.string().optional(),
+    status: z.string().default("setup"),
+    primaryColor: z.string().default("#e65100"),
+    secondaryColor: z.string().default("#f57c00"),
+    rtl: z.boolean().default(true),
+  });
+
+  // Restaurant form
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      description: "",
+      adminId: isSuperAdmin ? 0 : user?.id ?? 0,
+      phone: "",
+      email: "",
+      address: "",
+      status: "setup",
+      primaryColor: "#e65100",
+      secondaryColor: "#f57c00",
+      rtl: true,
+    },
+  });
+  
+  // Update state when URL changes
+  useEffect(() => {
+    const params = new URLSearchParams(location.split("?")[1]);
+    setSearchParams(params);
+    const newAction = params.get("action");
+    const newIdParam = params.get("id");
+    
+    // Update dialog visibility based on URL parameters
+    setShowDialog(!!newAction);
+    
+    // Update current restaurant ID if there's an ID in the URL
+    if (newIdParam) {
+      setCurrentRestaurantId(parseInt(newIdParam));
+    } else if (newAction === "add") {
+      setCurrentRestaurantId(undefined);
+      // Reset form when adding a new restaurant
+      form.reset({
+        name: "",
+        description: "",
+        adminId: isSuperAdmin ? 0 : user?.id ?? 0,
+        phone: "",
+        email: "",
+        address: "",
+        status: "setup",
+        primaryColor: "#e65100",
+        secondaryColor: "#f57c00",
+        rtl: true,
+      });
+    }
+  }, [location, form, isSuperAdmin, user]);
   const [file, setFile] = useState<File | null>(null);
 
   const isSuperAdmin = user?.role === "super_admin";
@@ -106,43 +170,10 @@ export default function Restaurants() {
   // Filter restaurant admins
   const restaurantAdmins = users?.filter(u => u.role === "restaurant_admin");
 
-  // Form validation schema
-  const formSchema = z.object({
-    name: z.string().min(1, { message: t("name_required") }),
-    description: z.string().optional(),
-    adminId: isSuperAdmin 
-      ? z.number().min(1, { message: t("manager_required") })
-      : z.number().default(user?.id || 0),
-    phone: z.string().optional(),
-    email: z.string().email().optional().or(z.literal("")),
-    address: z.string().optional(),
-    status: z.string().default("setup"),
-    primaryColor: z.string().default("#e65100"),
-    secondaryColor: z.string().default("#f57c00"),
-    rtl: z.boolean().default(true),
-  });
-
   // Get filtered restaurants
   const filteredRestaurants = restaurants?.filter(restaurant =>
     restaurant.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  // Restaurant form
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      name: "",
-      description: "",
-      adminId: isSuperAdmin ? 0 : user?.id ?? 0,
-      phone: "",
-      email: "",
-      address: "",
-      status: "setup",
-      primaryColor: "#e65100",
-      secondaryColor: "#f57c00",
-      rtl: true,
-    },
-  });
 
   // Load current restaurant data into form when editing
   useEffect(() => {
