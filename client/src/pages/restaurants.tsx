@@ -229,7 +229,7 @@ export default function Restaurants() {
       secondaryColor: "#f57c00",
       rtl: true,
     });
-    setLocation("/restaurant/new");
+    setLocation("/restaurants?action=new");
   };
 
   // Handle edit restaurant button click

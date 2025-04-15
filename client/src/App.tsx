@@ -35,12 +35,12 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
 function AppRoutes() {
   const { dir } = useLocale();
-  
+
   return (
     <div className={`font-sans antialiased bg-neutral-50 text-neutral-800 ${dir === 'rtl' ? 'rtl' : ''}`}>
       <Switch>
         <Route path="/login" component={Login} />
-        
+
         {/* Protected routes */}
         <Route path="/">
           <ProtectedRoute>
@@ -48,13 +48,13 @@ function AppRoutes() {
               <Sidebar />
               <div className="flex-1 overflow-y-auto">
                 <Switch>
-                  <Route path="/restaurant/new" component={Restaurants} />
                   <Route path="/restaurant/:id/dashboard" component={RestaurantDashboard} />
                   <Route path="/restaurant/:id/menu" component={MenuEditor} />
                   <Route path="/restaurant/:id/appearance" component={Appearance} />
                   <Route path="/restaurant/:id/qr-codes" component={QRCodes} />
                   <Route path="/restaurant/:id/social-media" component={SocialMedia} />
                   <Route path="/restaurants" component={Restaurants} />
+                  <Route path="/restaurants/new" component={Restaurants} />
                   <Route path="/users" component={Users} />
                   <Route path="/categories" component={Categories} />
                   <Route path="/" component={Dashboard} />
@@ -64,7 +64,7 @@ function AppRoutes() {
             </div>
           </ProtectedRoute>
         </Route>
-        
+
         {/* Fallback to 404 */}
         <Route component={NotFound} />
       </Switch>
