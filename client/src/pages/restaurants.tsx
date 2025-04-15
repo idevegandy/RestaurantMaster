@@ -372,17 +372,50 @@ export default function Restaurants() {
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <div className="flex space-x-2 space-x-reverse">
-                          <Button variant="ghost" size="sm" onClick={() => handleViewRestaurant(restaurant.id)}>
+                          <Button variant="ghost" size="sm" onClick={() => handleViewRestaurant(restaurant.id)} title={t("view_restaurant")}>
                             <Eye className="h-4 w-4" />
                           </Button>
-                          <Button variant="ghost" size="sm" onClick={() => handleEditRestaurant(restaurant.id)}>
+                          <Button variant="ghost" size="sm" onClick={() => handleEditRestaurant(restaurant.id)} title={t("edit_restaurant")}>
                             <Edit className="h-4 w-4" />
                           </Button>
+                          {isSuperAdmin && manager && (
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-700" title={t("manage_admin")}>
+                                  <UserCircle className="h-4 w-4" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>{t("manage_admin")}</DropdownMenuLabel>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => {
+                                  // Open the edit user form for this restaurant's admin
+                                  if (manager) {
+                                    // Find the user with this ID
+                                    navigate(`/users?edit=${manager.id}`);
+                                  }
+                                }}>
+                                  <UserIcon className="h-4 w-4 mr-2" />
+                                  {t("edit_admin_details")}
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => {
+                                  // Open the edit user form and focus on password field
+                                  if (manager) {
+                                    navigate(`/users?edit=${manager.id}&focus=password`);
+                                  }
+                                }}>
+                                  <KeyIcon className="h-4 w-4 mr-2" />
+                                  {t("reset_admin_password")}
+                                </DropdownMenuItem>
+                              </DropdownMenuContent>
+                            </DropdownMenu>
+                          )}
                           <Button 
                             variant="ghost" 
                             size="sm" 
                             className="text-red-500 hover:text-red-700" 
                             onClick={() => openDeleteDialog(restaurant.id)}
+                            title={t("delete_restaurant")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>

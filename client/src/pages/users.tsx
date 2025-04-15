@@ -17,6 +17,7 @@ import {
   AlertTriangle,
   X,
   UserCircle,
+  Key as KeyIcon,
 } from "lucide-react";
 import {
   Dialog,
@@ -303,15 +304,37 @@ export default function Users() {
                             size="sm"
                             onClick={() => handleEditUser(userData.id)}
                             disabled={userData.id === user?.id} // Prevent editing own account
+                            title={t("edit_user")}
                           >
                             <Edit className="h-4 w-4" />
                           </Button>
+                          {userData.role === "restaurant_admin" && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => {
+                                handleEditUser(userData.id);
+                                // Focus on password field after dialog opens
+                                setTimeout(() => {
+                                  const passwordInput = document.querySelector('input[name="password"]') as HTMLInputElement;
+                                  if (passwordInput) {
+                                    passwordInput.focus();
+                                  }
+                                }, 300);
+                              }}
+                              className="text-blue-500 hover:text-blue-700"
+                              title={t("reset_password")}
+                            >
+                              <KeyIcon className="h-4 w-4" />
+                            </Button>
+                          )}
                           <Button 
                             variant="ghost" 
                             size="sm" 
                             className="text-red-500 hover:text-red-700" 
                             onClick={() => handleDeleteClick(userData.id)}
                             disabled={userData.id === user?.id || userData.role === "super_admin"} // Prevent deleting own account or other super admin
+                            title={t("delete_user")}
                           >
                             <Trash2 className="h-4 w-4" />
                           </Button>
