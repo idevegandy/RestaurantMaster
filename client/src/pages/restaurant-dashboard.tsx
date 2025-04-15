@@ -121,9 +121,9 @@ export default function RestaurantDashboard() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-8">
         <div className="flex items-center">
-          <Avatar className="h-12 w-12 rounded-full mr-4">
+          <Avatar className="h-12 w-12 rounded-full mr-4 bg-primary">
             <AvatarImage src={restaurant.logo || ""} alt={restaurant.name} />
-            <AvatarFallback>{restaurant.name.charAt(0)}</AvatarFallback>
+            <AvatarFallback className="bg-primary text-white">{restaurant.name.charAt(0)}</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-2xl font-bold font-heading">{restaurant.name}</h1>
