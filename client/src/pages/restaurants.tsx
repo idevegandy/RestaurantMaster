@@ -419,17 +419,17 @@ export default function Restaurants() {
                                   <UserCircle className="h-4 w-4" />
                                 </Button>
                               </DropdownMenuTrigger>
-                              <DropdownMenuContent align="end">
+                              <DropdownMenuContent align="end" className="w-48">
                                 <DropdownMenuLabel>{t("manage_admin")}</DropdownMenuLabel>
                                 <DropdownMenuSeparator />
                                 <DropdownMenuItem
-                                  onSelect={() => manager && handleEditAdmin(manager.id)}
+                                  onClick={() => manager && handleEditAdmin(manager.id)}
                                 >
                                   <UserIcon className="h-4 w-4 mr-2" />
                                   {t("edit_admin_details")}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem
-                                  onSelect={() => manager && handleResetAdminPassword(manager.id)}
+                                  onClick={() => manager && handleResetAdminPassword(manager.id)}
                                 >
                                   <KeyIcon className="h-4 w-4 mr-2" />
                                   {t("reset_admin_password")}

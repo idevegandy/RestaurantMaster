@@ -44,12 +44,12 @@ const NavItem = ({ href, icon, label, isActive, onClick }: NavItemProps) => {
   return (
     <a href={href} onClick={handleClick}>
       <div
-        className={`flex items-center px-4 py-3 hover:bg-neutral-100 cursor-pointer ${
-          isActive ? "bg-primary/10 border-r-3 border-primary" : "text-neutral-700"
+        className={`flex items-center px-4 py-3 hover:bg-neutral-100 cursor-pointer transition-colors ${
+          isActive ? "bg-primary/10 border-r-3 border-primary text-primary" : "text-neutral-700"
         }`}
       >
         <span className="w-5 text-center ml-3">{icon}</span>
-        <span className={isActive ? "font-medium text-primary" : ""}>{label}</span>
+        <span className={`ml-2 ${isActive ? "font-medium" : ""}`}>{label}</span>
       </div>
     </a>
   );
